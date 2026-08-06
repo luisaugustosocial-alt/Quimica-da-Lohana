@@ -1,0 +1,213 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('https://static.figma.com/font/Quicksand_wght__1') format('woff2');
+}
+
+@theme {
+  --font-sans: 'Quicksand', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Quicksand', system-ui, sans-serif;
+  margin: 0; padding: 0; overflow-x: hidden;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(240,98,146,0.4); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #f06292; }
+
+/* ─── Petal animations ──────────────────────────────────────────────────────── */
+@keyframes petalFall {
+  0%   { transform: translateY(-10vh) rotate(0deg) translateX(0px);  opacity: 0; }
+  10%  { opacity: 0.9; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(110vh) rotate(700deg) translateX(70px); opacity: 0; }
+}
+@keyframes petalSway {
+  0%   { transform: translateX(0px) rotate(0deg); }
+  33%  { transform: translateX(22px) rotate(18deg); }
+  66%  { transform: translateX(-18px) rotate(-12deg); }
+  100% { transform: translateX(0px) rotate(0deg); }
+}
+@keyframes tulipBloom {
+  0%   { transform: scale(0) rotate(-25deg); opacity: 0; }
+  65%  { transform: scale(1.12) rotate(6deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes fadeSlideUp {
+  0%   { opacity: 0; transform: translateY(36px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%      { transform: translateY(-14px) rotate(6deg); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.7; transform:scale(1.08); }
+}
+@keyframes cardEntrance {
+  0%   { opacity:0; transform: translateY(18px) scale(0.97); }
+  100% { opacity:1; transform: translateY(0) scale(1); }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(240,98,146,0.3), 0 8px 32px rgba(156,77,204,0.2); }
+  50%      { box-shadow: 0 0 40px rgba(240,98,146,0.5), 0 12px 48px rgba(156,77,204,0.35); }
+}
+
+/* ─── Utility classes ───────────────────────────────────────────────────────── */
+.petal-fall {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  animation: petalFall linear infinite, petalSway ease-in-out infinite;
+}
+
+.tulip-bloom  { animation: tulipBloom 1.3s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.fade-slide-up{ animation: fadeSlideUp 0.75s ease forwards; }
+.fade-in      { animation: fadeIn 0.45s ease forwards; }
+.float-anim   { animation: float 3.5s ease-in-out infinite; }
+.card-entrance{ animation: cardEntrance 0.5s ease forwards; }
+
+/* ─── Glass ─────────────────────────────────────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.65);
+}
+
+/* ─── Gradient text ─────────────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #e91e8c, #9c4dcc, #e91e8c);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ─── Cards ─────────────────────────────────────────────────────────────────── */
+.card-hover {
+  transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.card-hover:hover {
+  transform: translateY(-8px) scale(1.015);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.04),
+    0 8px 16px rgba(233,30,140,0.12),
+    0 24px 48px rgba(156,77,204,0.15),
+    0 0 0 1px rgba(240,98,146,0.15);
+}
+
+/* ─── Primary button ─────────────────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #f06292, #9c4dcc);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 28px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 12px rgba(240,98,146,0.35),
+    0 8px 24px rgba(156,77,204,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+.btn-primary:hover::before { left: 100%; }
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 20px rgba(240,98,146,0.45),
+    0 16px 40px rgba(156,77,204,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow:
+    0 2px 8px rgba(240,98,146,0.3),
+    inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ─── Nav items ─────────────────────────────────────────────────────────────── */
+.nav-item {
+  position: relative;
+  transition: all 0.22s ease;
+}
+.nav-item:hover { background: rgba(233,30,140,0.06) !important; }
+
+/* ─── Focus / inputs ────────────────────────────────────────────────────────── */
+textarea:focus, input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(240,98,146,0.18), 0 0 0 1px rgba(240,98,146,0.4);
+}
+
+/* ─── 3-D page background ────────────────────────────────────────────────────── */
+.page-bg-light {
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(252,228,236,0.9) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 100%, rgba(225,190,231,0.8) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,240,250,0.6) 0%, transparent 80%),
+    linear-gradient(160deg, #fce4ec 0%, #fff0f8 40%, #f3e5f5 80%, #ede7f6 100%);
+}
+.page-bg-dark {
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(45,0,80,0.8) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(26,0,50,0.9) 0%, transparent 60%),
+    linear-gradient(160deg, #0d0015 0%, #1a0025 50%, #12001f 100%);
+}
+
+/* ─── 3-D card inner shine ───────────────────────────────────────────────────── */
+.card-3d {
+  position: relative;
+  overflow: hidden;
+}
+.card-3d::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ─── Responsive mobile ──────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .hidden-mobile { display: none !important; }
+  .show-mobile   { display: flex !important; }
+  .page-content  { margin-left: 0 !important; padding-top: 70px !important; }
+}
+@media (min-width: 769px) {
+  .show-mobile  { display: none !important; }
+  .page-content { margin-left: 216px !important; }
+}

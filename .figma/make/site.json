@@ -1,0 +1,10 @@
+{
+  "description": "A personalized study platform for Lohanna, featuring interactive chemistry lessons, quizzes, performance tracking, and AI assistance in a beautifully designed environment.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
