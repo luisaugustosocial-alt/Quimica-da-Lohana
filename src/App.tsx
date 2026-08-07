@@ -1391,9 +1391,7 @@ function TulipaIA({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
             boxShadow: "0 2px 8px rgba(255,152,0,0.08)",
           }}>
             <span style={{ fontSize: "1.1rem" }}>📚</span>
-            {!openaiKey
-              ? "Chave OpenAI não configurada no código. Modo local: exercícios e cálculos de química."
-              : "IA desativada. Ative o botão acima para conversa geral com GPT-4o mini."}
+            IA desativada. Ative o botão acima para conversar com a Tulipa IA.
           </div>
         )}
 
