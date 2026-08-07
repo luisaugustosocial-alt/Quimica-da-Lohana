@@ -17,6 +17,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
   type User,
 } from "firebase/auth";
 
@@ -2286,6 +2287,21 @@ const handleLogin = async () => {
   }
 };
 
+const handleResetPassword = async () => {
+  if (!email) {
+    alert("Digite seu e-mail para redefinir a senha.");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Enviamos um e-mail para você redefinir sua senha! 💗");
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível enviar o e-mail.");
+  }
+};
+
 const handleLogout = async () => {
   await signOut(auth);
 };
@@ -2445,6 +2461,19 @@ if (!user) {
         <button onClick={handleLogin}>
           Entrar
         </button>
+
+        <button
+  onClick={handleResetPassword}
+  style={{
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    textDecoration: "underline",
+    marginBottom: "15px"
+  }}
+>
+  Esqueci minha senha
+</button>
 
         <button onClick={handleRegister}>
           Criar conta
