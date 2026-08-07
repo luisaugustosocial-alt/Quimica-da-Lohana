@@ -1277,29 +1277,23 @@ function TulipaIA({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
   }
 
   async function sendWithOpenAI(msg: string): Promise<string> {
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${openaiKey}` },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: "Você é a Tulipa IA, assistente pessoal da Lohana — uma jovem estudante inteligente e dedicada. Você é carinhosa, divertida, inteligente e pode conversar sobre absolutamente qualquer assunto: química, outras matérias escolares, vida pessoal, curiosidades, cultura pop, filosofia, matemática, história, ou simplesmente bater papo. Responda sempre em português brasileiro de forma natural e acolhedora, como uma amiga próxima e muito inteligente. Use emojis com moderação. Chame a Lohana carinhosamente de 'princesa' ou pelo nome. Nunca recuse uma conversa.",
-          },
-          { role: "user", content: msg },
-        ],
-        max_tokens: 1000, temperature: 0.8,
-      }),
-    });
-    if (!resp.ok) {
-      const errBody = await resp.json().catch(() => ({})) as { error?: { message?: string } };
-      throw new Error(errBody?.error?.message ?? `HTTP ${resp.status}`);
-    }
-    const data = await resp.json() as { choices?: { message?: { content?: string } }[] };
-    return data.choices?.[0]?.message?.content ?? getOfflineResponse(msg);
-  }
+  const resp = await fetch("/api/gemini", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message: msg,
+    }),
+  });
 
+  const data = await resp.json();
+
+  if (!resp.ok) {
+    throw new Error(data?.error || "Erro ao consultar a IA");
+  }
+  return data.answer ?? getOfflineResponse(msg);
+}
   function send(text?: string) {
     const msg = text || input.trim();
     if (!msg) return;
