@@ -1242,7 +1242,7 @@ function TulipaIA({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
     return saved !== null ? saved === "true" : true;
   });
 
-  cconst useOnlineAI = aiEnabled;
+  const useOnlineAI = aiEnabled;
   const welcomeText = useOnlineAI
     ? "🌷 Oi, Lohana! Sou a Tulipa IA — sua assistente pessoal!\n\nPosso conversar sobre qualquer assunto, te ajudar com:\n• Química e outras matérias 🧪\n• Dúvidas do dia a dia\n• Redação, história, matemática...\n• Ou simplesmente bater papo! 💬\n\nO que você quer fazer hoje? 💜"
     : "🌷 Olá, Lohana! Estou no modo **exercícios e cálculos**.\n\nPosso criar exercícios, resolver cálculos de química, fazer flashcards, balancear equações e fazer resumos de qualquer tema de química.\n\nO que precisa? 📚💜";
