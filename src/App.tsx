@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-// ─── Coloque sua chave OpenAI aqui ───────────────────────────────────────────
-const OPENAI_API_KEY = "";
-// ─────────────────────────────────────────────────────────────────────────────
+
 import {
   Home, BookOpen, FlaskConical, Bot, StickyNote, BarChart3,
   Star, Settings, ChevronRight, Check, Play, Pause, RotateCcw,
@@ -1244,9 +1242,7 @@ function TulipaIA({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
     return saved !== null ? saved === "true" : true;
   });
 
-  const openaiKey = OPENAI_API_KEY && OPENAI_API_KEY !== "SUA_CHAVE_AQUI" ? OPENAI_API_KEY : "";
-  const useOnlineAI = aiEnabled && !!openaiKey;
-
+  cconst useOnlineAI = aiEnabled;
   const welcomeText = useOnlineAI
     ? "🌷 Oi, Lohana! Sou a Tulipa IA — sua assistente pessoal!\n\nPosso conversar sobre qualquer assunto, te ajudar com:\n• Química e outras matérias 🧪\n• Dúvidas do dia a dia\n• Redação, história, matemática...\n• Ou simplesmente bater papo! 💬\n\nO que você quer fazer hoje? 💜"
     : "🌷 Olá, Lohana! Estou no modo **exercícios e cálculos**.\n\nPosso criar exercícios, resolver cálculos de química, fazer flashcards, balancear equações e fazer resumos de qualquer tema de química.\n\nO que precisa? 📚💜";
@@ -1267,7 +1263,7 @@ function TulipaIA({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
     const next = !aiEnabled;
     setAiEnabled(next);
     localStorage.setItem("tulipa_ai_enabled", String(next));
-    const newWelcome = (next && openaiKey)
+    const newWelcome = next
       ? "🌷 IA ativada! Agora posso conversar sobre qualquer assunto. O que quer bater papo ou perguntar? 💜"
       : "🌷 Modo exercícios ativado! Pode pedir exercícios, cálculos, flashcards e resumos de química. 📚";
     setMessages([{
@@ -2142,7 +2138,7 @@ function FerramentasPage({ darkMode }: { darkMode: boolean }) {
 function ConfigPage({ darkMode, setDarkMode, lsPrefix }: { darkMode: boolean; setDarkMode: (v: boolean) => void; lsPrefix: string }) {
   const tc = darkMode ? "#f8bbd0" : "#4a0072";
   const sc = darkMode ? "#ce93d8" : "#7b1fa2";
-  const aiActive = OPENAI_API_KEY && OPENAI_API_KEY !== "SUA_CHAVE_AQUI";
+  const aiActive = true
 
   return (
     <Page darkMode={darkMode}>
@@ -2181,10 +2177,10 @@ function ConfigPage({ darkMode, setDarkMode, lsPrefix }: { darkMode: boolean; se
             <div style={{ width: 10, height: 10, borderRadius: "50%", background: aiActive ? "#4caf50" : "#ff9800", flexShrink: 0 }} />
             <div>
               <div style={{ fontWeight: 700, color: tc, fontSize: "0.88rem" }}>
-                {aiActive ? "GPT-4o mini ativo 🌷" : "Modo demonstração"}
+                {aiActive ? "Gemini ativo 🌷" : "Modo demonstração"}
               </div>
               <div style={{ color: sc, fontSize: "0.78rem", fontWeight: 500 }}>
-                {aiActive ? "IA completa conectada e funcionando" : "Configure OPENAI_API_KEY no código para ativar"}
+                {aiActive ? "IA Gemini conectada e funcionando" : "IA indisponível"}
               </div>
             </div>
           </div>
