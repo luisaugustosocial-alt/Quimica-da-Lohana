@@ -12,7 +12,16 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Area, AreaChart, RadialBarChart, RadialBar
 } from "recharts";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  type User,
+} from "firebase/auth";
 
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { auth, db } from "./firebase";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type View = "splash" | "home" | "aulas" | "quiz" | "ia" | "anotacoes" | "progresso" | "favoritos" | "ferramentas" | "config";
@@ -2248,6 +2257,38 @@ function formatStudyTime(totalSecs: number): string {
 
 export default function App() {
   const [view, setView] = useState<View>("splash");
+  const [user, setUser] = useState<User | null>(null);
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [authLoading, setAuthLoading] = useState(true);
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+    setAuthLoading(false);
+  });
+
+  return () => unsubscribe();
+}, []);
+const handleRegister = async () => {
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Conta criada com sucesso! 💗");
+  } catch (error: any) {
+    alert("Erro ao criar conta: " + error.message);
+  }
+};
+
+const handleLogin = async () => {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error: any) {
+    alert("E-mail ou senha incorretos.");
+  }
+};
+
+const handleLogout = async () => {
+  await signOut(auth);
+};
   const [darkMode, setDarkMode] = useState(false);
   const [lsPrefix, setLsPrefix] = useState("lohana_default");
   const [lessons, setLessons] = useState<Lesson[]>(LESSONS);
@@ -2362,7 +2403,56 @@ export default function App() {
   function nav(v: View) { setView(v); window.scrollTo(0, 0); }
 
   if (view === "splash") return <SplashScreen onEnter={() => nav("home")} />;
+if (authLoading) {
+  return <div>Carregando...</div>;
+}
 
+if (!user) {
+  return (
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      background: "#fce4ec"
+    }}>
+      <div style={{
+        background: "white",
+        padding: "40px",
+        borderRadius: "24px",
+        width: "350px",
+        textAlign: "center"
+      }}>
+        <h1>🌷 Química da Lohana</h1>
+        <p>Entre para continuar seus estudos 💗</p>
+
+        <input
+          type="email"
+          placeholder="Seu e-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ width: "100%", padding: "12px", marginBottom: "10px" }}
+        />
+
+        <input
+          type="password"
+          placeholder="Sua senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ width: "100%", padding: "12px", marginBottom: "15px" }}
+        />
+
+        <button onClick={handleLogin}>
+          Entrar
+        </button>
+
+        <button onClick={handleRegister}>
+          Criar conta
+        </button>
+      </div>
+    </div>
+  );
+}
   return (
     <div style={{ minHeight: "100vh", background: darkMode ? "#0d0015" : "#fce4ec", fontFamily: "Quicksand, sans-serif" }}>
       <NavBar view={view} onNav={nav} darkMode={darkMode} />
