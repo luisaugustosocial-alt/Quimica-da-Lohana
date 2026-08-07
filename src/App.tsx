@@ -18,6 +18,7 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  deleteUser,
   type User,
 } from "firebase/auth";
 
@@ -925,6 +926,7 @@ function QuizPage({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
   const [showExpl, setShowExpl] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [lives, setLives] = useState(5);
   const tc = darkMode ? "#f8bbd0" : "#4a0072";
   const sc = darkMode ? "#ce93d8" : "#7b1fa2";
   const LEVEL_COLORS = { easy: "#4caf50", medium: "#ff9800", hard: "#f44336" };
@@ -939,9 +941,16 @@ function QuizPage({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [stage]);
 
-  function shuffle<T>(arr: T[]): T[] {
-    return [...arr].sort(() => Math.random() - 0.5);
+ function shuffle<T>(arr: T[]): T[] {
+  const result = [...arr];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
   }
+
+  return result;
+}
 
   function startQuiz() {
     let pool = level === "all" ? QUIZ_QUESTIONS : QUIZ_QUESTIONS.filter(q => q.level === level);
@@ -956,15 +965,36 @@ function QuizPage({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
     setQuestions(display);
     setAnswers(new Array(display.length).fill(null));
     setCurrent(0); setSelected(null); setShowExpl(false); setElapsed(0);
+    setLives(5);
     setStage("playing");
   }
 
-  function handleAnswer(idx: number) {
-    if (selected !== null) return;
-    setSelected(idx);
-    setShowExpl(true);
-    const a = [...answers]; a[current] = idx; setAnswers(a);
+function handleAnswer(idx: number) {
+  if (selected !== null) return;
+
+  setSelected(idx);
+  setShowExpl(true);
+
+  const a = [...answers];
+  a[current] = idx;
+  setAnswers(a);
+
+  if (idx !== questions[current].shuffledCorrect) {
+    const nextLives = Math.max(0, lives - 1);
+    setLives(nextLives);
+
+    if (nextLives === 0) {
+      setTimeout(() => {
+        alert("Suas vidas acabaram! ❤️ Revise o conteúdo e tente novamente.");
+        setLives(5);
+        setCurrent(0);
+        setSelected(null);
+        setShowExpl(false);
+        setStage("setup");
+      }, 300);
+    }
   }
+}
 
   function next() {
     if (current < questions.length - 1) {
@@ -1089,6 +1119,17 @@ function QuizPage({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
           <h2 style={{ color: tc, fontWeight: 700, fontSize: "1rem", lineHeight: 1.55, margin: 0 }}>{q.question}</h2>
         </Card>
         <div style={{ display: "flex", flexDirection: "column", gap: 11, marginBottom: 22 }}>
+          <div style={{
+  marginBottom: 14,
+  fontSize: "1.15rem",
+  fontWeight: 700
+}}>
+ Vidas: {[0, 1, 2, 3, 4].map((i) => (
+  <span key={i}>
+    {i < lives ? "❤️" : "🩶"}
+  </span>
+))}
+</div>
           {q.shuffledOptions.map((opt, i) => {
             let border = "rgba(240,98,146,0.28)";
             let bgOver = "transparent";
@@ -1098,7 +1139,7 @@ function QuizPage({ darkMode, lsPrefix }: { darkMode: boolean; lsPrefix: string 
               else if (i === selected) { bgOver = "rgba(244,67,54,0.14)"; border = "#f44336"; color = "#f44336"; }
             }
             return (
-              <button key={i} onClick={() => handleAnswer(i)} style={{
+              <button key={`${q.id}-${i}`} onClick={() => handleAnswer(i)} style={{
                 padding: "13px 17px", borderRadius: 13,
                 border: `2px solid ${border}`,
                 background: darkMode ? `rgba(45,0,80,0.5)` : `rgba(255,255,255,0.82)`,
