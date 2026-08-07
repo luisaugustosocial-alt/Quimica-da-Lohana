@@ -2313,6 +2313,7 @@ export default function App() {
 const [email, setEmail] = useState("");
 const [password, setPassword] = useState("");
 const [authLoading, setAuthLoading] = useState(true);
+const [guestMode, setGuestMode] = useState(false);
 useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
     setUser(currentUser);
@@ -2503,7 +2504,7 @@ if (authLoading) {
   return <div>Carregando...</div>;
 }
 
-if (!user) {
+if (!user && !guestMode) {
   return (
     <div style={{
       minHeight: "100vh",
@@ -2558,6 +2559,20 @@ if (!user) {
         <button onClick={handleRegister}>
           Criar conta
         </button>
+  <button
+  onClick={() => setGuestMode(true)}
+  style={{
+    width: "100%",
+    padding: "12px",
+    marginTop: "10px",
+    borderRadius: "12px",
+    border: "1px solid #ccc",
+    background: "transparent",
+    cursor: "pointer"
+  }}
+>
+  Entrar como convidado
+</button>      
       </div>
     </div>
   );
@@ -2565,6 +2580,38 @@ if (!user) {
   return (
     <div style={{ minHeight: "100vh", background: darkMode ? "#0d0015" : "#fce4ec", fontFamily: "Quicksand, sans-serif" }}>
       <NavBar view={view} onNav={nav} darkMode={darkMode} />
+      {guestMode && (
+  <div
+    style={{
+      margin: "16px",
+      padding: "14px 16px",
+      borderRadius: "14px",
+      background: "#fff3f8",
+      border: "1px solid #f3b6cf",
+      textAlign: "center",
+    }}
+  >
+    <div style={{ fontWeight: 700, marginBottom: "6px" }}>
+      Você está navegando como convidado
+    </div>
+
+    <div style={{ marginBottom: "10px", fontSize: "0.9rem" }}>
+      Crie uma conta para salvar seu progresso.
+    </div>
+
+    <button
+      onClick={() => setGuestMode(false)}
+      style={{
+        padding: "10px 16px",
+        borderRadius: "10px",
+        border: "none",
+        cursor: "pointer",
+      }}
+    >
+      Criar uma conta
+    </button>
+  </div>
+)}
       <FallingPetals />
       {view === "home"        && <HomePage lessons={lessons} darkMode={darkMode} onNav={nav} lsPrefix={lsPrefix} />}
       {view === "aulas"       && <AulasPage lessons={lessons} setLessons={setLessons} darkMode={darkMode} lsPrefix={lsPrefix} />}
