@@ -21,7 +21,7 @@ import {
   type User,
 } from "firebase/auth";
 
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -2143,7 +2143,21 @@ function FerramentasPage({ darkMode }: { darkMode: boolean }) {
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-function ConfigPage({ darkMode, setDarkMode, lsPrefix }: { darkMode: boolean; setDarkMode: (v: boolean) => void; lsPrefix: string }) {
+function ConfigPage({
+  darkMode,
+  setDarkMode,
+  lsPrefix,
+  onLogout,
+  onDeleteAccount,
+  userEmail,
+}: {
+  darkMode: boolean;
+  setDarkMode: (value: boolean) => void;
+  lsPrefix: string;
+  onLogout: () => void;
+  onDeleteAccount: () => void;
+  userEmail: string;
+}) {
   const tc = darkMode ? "#f8bbd0" : "#4a0072";
   const sc = darkMode ? "#ce93d8" : "#7b1fa2";
   const aiActive = true
@@ -2178,7 +2192,44 @@ function ConfigPage({ darkMode, setDarkMode, lsPrefix }: { darkMode: boolean; se
             <span style={{ fontSize: "1.5rem" }}>{darkMode ? "🌙" : "☀️"}</span>
           </div>
         </Card>
+<Card darkMode={darkMode} style={{ marginBottom: 18 }}>
+  <h3 style={{ color: tc, fontWeight: 700, marginBottom: 12 }}>
+    Minha conta
+  </h3>
 
+  <div style={{ color: sc, marginBottom: 16 }}>
+    {userEmail}
+  </div>
+
+  <button
+    onClick={onLogout}
+    style={{
+      width: "100%",
+      padding: "12px",
+      borderRadius: "12px",
+      border: "none",
+      cursor: "pointer",
+      marginBottom: "10px"
+    }}
+  >
+    Sair da conta
+  </button>
+
+  <button
+    onClick={onDeleteAccount}
+    style={{
+      width: "100%",
+      padding: "12px",
+      borderRadius: "12px",
+      border: "1px solid #c62828",
+      color: "#c62828",
+      background: "transparent",
+      cursor: "pointer"
+    }}
+  >
+    Excluir minha conta
+  </button>
+</Card>
         <Card darkMode={darkMode} style={{ marginBottom: 18 }}>
           <h3 style={{ color: tc, fontWeight: 700, marginBottom: 12 }}>🤖 Tulipa IA</h3>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -2304,6 +2355,35 @@ const handleResetPassword = async () => {
 
 const handleLogout = async () => {
   await signOut(auth);
+};
+const handleDeleteAccount = async () => {
+  if (!user) return;
+
+  const confirmar = window.confirm(
+    "Tem certeza que deseja excluir sua conta? Essa ação não poderá ser desfeita."
+  );
+
+  if (!confirmar) return;
+
+  try {
+    // Apaga os dados do aluno no Firestore
+    await deleteDoc(doc(db, "users", user.uid));
+
+    // Apaga a conta do Firebase Authentication
+    await deleteUser(user);
+
+    alert("Sua conta foi excluída.");
+  } catch (error: any) {
+    console.error(error);
+
+    if (error.code === "auth/requires-recent-login") {
+      alert(
+        "Por segurança, saia da conta, entre novamente com sua senha e tente excluir a conta outra vez."
+      );
+    } else {
+      alert("Não foi possível excluir a conta.");
+    }
+  }
 };
   const [darkMode, setDarkMode] = useState(false);
   const [lsPrefix, setLsPrefix] = useState("lohana_default");
@@ -2494,7 +2574,7 @@ if (!user) {
       {view === "progresso"   && <ProgressoPage lessons={lessons} darkMode={darkMode} lsPrefix={lsPrefix} />}
       {view === "favoritos"   && <FavoritosPage lessons={lessons} darkMode={darkMode} />}
       {view === "ferramentas" && <FerramentasPage darkMode={darkMode} />}
-      {view === "config"      && <ConfigPage darkMode={darkMode} setDarkMode={setDarkMode} lsPrefix={lsPrefix} />}
+      {view === "config" && <ConfigPage darkMode={darkMode} setDarkMode={setDarkMode} lsPrefix={lsPrefix} onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} userEmail={user?.email || ""} />}
       <Footer darkMode={darkMode} />
     </div>
   );
